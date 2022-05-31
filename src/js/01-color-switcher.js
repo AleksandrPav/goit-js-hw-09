@@ -3,19 +3,37 @@ const refs = {
     stopBtn: document.querySelector('button[data-stop]'),
 }
 
+
+
 console.log(refs);
 
 let intervalId;
+let isActive = false;
 
-refs.startBtn.addEventListener('click', () => {
+start();
+stop();
+
+
+function start() {
+   refs.startBtn.addEventListener('click', () => {
+    if (isActive) {
+        return;
+        } 
+        isActive = true;
     intervalId = setInterval(() => {
-        document.body.style.backgroundColor = getRandomHexColor();
+    document.body.style.backgroundColor = getRandomHexColor();
     }, 1000);
 });
+}
 
-refs.stopBtn.addEventListener('click', () => {
-    clearInterval(intervalId);
-});
+
+function stop() {
+    
+    refs.stopBtn.addEventListener('click', () => {
+        clearInterval(intervalId);
+        isActive = false;
+    });
+}
 
 
 function getRandomHexColor() {
