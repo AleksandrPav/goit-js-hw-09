@@ -13,6 +13,11 @@ const refs = {
   minutes: document.querySelector("span[data-minutes]"),
   seconds: document.querySelector("span[data-seconds]"),
 }
+let timerId = null;
+let deltaTime = null;
+let timeToFinish = null;
+const curentDate = new Date();
+
 console.log(refs);
 
 const options = {
