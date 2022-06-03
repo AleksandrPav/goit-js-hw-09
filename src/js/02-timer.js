@@ -16,7 +16,7 @@ const refs = {
 let timerId = null;
 let deltaTime = null;
 let timeToFinish = null;
-const curentDate = new Date();
+let curentDate = new Date();
 
 console.log(refs);
 
@@ -51,4 +51,37 @@ function convertMs(ms) {
 
   return { days, hours, minutes, seconds };
 }
+
+// function addLeadingZero(value) {
+//   return value < 10 ? `0${value}` : value;
+// }
+
+
+const timer = {
+
+  start () {
+    const startDate = new Date(refs.input.value);
+    const endDate = new Date(startDate.getTime() - deltaTime);
+    const ms = endDate - curentDate;
+    timeToFinish = convertMs(ms);
+    console.log(timeToFinish);
+
+
+    timerId = setInterval(() => {
+      const ms = endDate - curentDate;
+      timeToFinish = convertMs(ms);
+      console.log(timeToFinish);
+      refs.days.textContent = timeToFinish.days;
+      refs.hours.textContent = timeToFinish.hours;
+      refs.minutes.textContent = timeToFinish.minutes;
+      refs.seconds.textContent = timeToFinish.seconds;
+    }, 1000);
+  }
+  
+
+
+
+};
+
+refs.btnStart.addEventListener("click", timer.start);
 
