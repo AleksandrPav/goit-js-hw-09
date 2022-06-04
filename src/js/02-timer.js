@@ -13,12 +13,8 @@ const refs = {
   minutes: document.querySelector("span[data-minutes]"),
   seconds: document.querySelector("span[data-seconds]"),
 }
-let timerId = null;
-let deltaTime = null;
-let timeToFinish = null;
-let curentDate = new Date();
-
-console.log(refs);
+refs.btnStart.addEventListener("click", startTimer);
+refs.btnStart.disabled = true;
 
 const options = {
   enableTime: true,
@@ -26,12 +22,53 @@ const options = {
   defaultDate: new Date(),
   minuteIncrement: 1,
   onClose(selectedDates) {
-    console.log(selectedDates[0]);
-  },
+    if (selectedDates[0] < Date.now(refs.input.value)) {
+      Notify.failure('Please choose a date in the future');
+      refs.btnStart.disabled = true;
+  } else {
+      refs.btnStart.disabled = false;
+  }
+  }
+
 };
 
 
-flatpickr(refs.input, {options});
+flatpickr(refs.input, options );
+
+
+
+function startTimer() {
+  const interval = setInterval(() => {
+    const date = new Date(refs.input.value);
+    const now = Date.now();
+    const diff = date - now;
+    const { days, hours, minutes, seconds } = convertMs(diff);
+    refs.days.textContent = days;
+    refs.hours.textContent = hours;
+    refs.minutes.textContent = minutes;
+    refs.seconds.textContent = seconds;
+    if (diff < 0) {
+      clearInterval(interval);
+      refs.days.textContent = "00";
+      refs.hours.textContent = "00";
+      refs.minutes.textContent = "00";
+      refs.seconds.textContent = "00";
+      Notify.success('Время вышло');
+    }
+  })
+  
+};
+
+
+
+
+
+
+function addLeadingZero(value) {
+  return String(value).padStart(2, "0");
+};
+
+
 
 function convertMs(ms) {
   // Number of milliseconds per unit of time
@@ -41,47 +78,13 @@ function convertMs(ms) {
   const day = hour * 24;
 
   // Remaining days
-  const days = Math.floor(ms / day);
+  const days = addLeadingZero(Math.floor(ms / day));
   // Remaining hours
-  const hours = Math.floor((ms % day) / hour);
+  const hours = addLeadingZero(Math.floor((ms % day) / hour));
   // Remaining minutes
-  const minutes = Math.floor(((ms % day) % hour) / minute);
+  const minutes = addLeadingZero(Math.floor(((ms % day) % hour) / minute));
   // Remaining seconds
-  const seconds = Math.floor((((ms % day) % hour) % minute) / second);
+  const seconds = addLeadingZero(Math.floor((((ms % day) % hour) % minute) / second));
 
   return { days, hours, minutes, seconds };
 }
-
-// function addLeadingZero(value) {
-//   return value < 10 ? `0${value}` : value;
-// }
-
-
-const timer = {
-
-  start () {
-    const startDate = new Date(refs.input.value);
-    const endDate = new Date(startDate.getTime() - deltaTime);
-    const ms = endDate - curentDate;
-    timeToFinish = convertMs(ms);
-    console.log(timeToFinish);
-
-
-    timerId = setInterval(() => {
-      const ms = endDate - curentDate;
-      timeToFinish = convertMs(ms);
-      console.log(timeToFinish);
-      refs.days.textContent = timeToFinish.days;
-      refs.hours.textContent = timeToFinish.hours;
-      refs.minutes.textContent = timeToFinish.minutes;
-      refs.seconds.textContent = timeToFinish.seconds;
-    }, 1000);
-  }
-  
-
-
-
-};
-
-refs.btnStart.addEventListener("click", timer.start);
-
