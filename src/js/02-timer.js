@@ -13,7 +13,7 @@ const refs = {
   minutes: document.querySelector("span[data-minutes]"),
   seconds: document.querySelector("span[data-seconds]"),
 }
-refs.btnStart.addEventListener("click", startTimer);
+
 refs.btnStart.disabled = true;
 
 const options = {
@@ -36,33 +36,44 @@ const options = {
 flatpickr(refs.input, options );
 
 
+const timer = {
+  isActive: false,
+  intervalId: null,
 
-function startTimer() {
-  const interval = setInterval(() => {
-    const date = new Date(refs.input.value);
-    const now = Date.now();
-    const diff = date - now;
-    const { days, hours, minutes, seconds } = convertMs(diff);
-    refs.days.textContent = days;
-    refs.hours.textContent = hours;
-    refs.minutes.textContent = minutes;
-    refs.seconds.textContent = seconds;
-    if (diff < 0) {
-      clearInterval(interval);
+  start() {
+    if (this.isActive) {
+      return;
+    }
+    this.isActive = true;
+    this.intervalId = setInterval(() => {
+      const date = new Date(refs.input.value);
+      const now = Date.now();
+      const diff = date - now;
+      const { days, hours, minutes, seconds } = convertMs(diff);
+      refs.days.textContent = days;
+      refs.hours.textContent = hours;
+      refs.minutes.textContent = minutes;
+      refs.seconds.textContent = seconds;
+      if (diff <= 0) {
+      clearInterval(this.intervalId);
+  
       refs.days.textContent = "00";
       refs.hours.textContent = "00";
       refs.minutes.textContent = "00";
       refs.seconds.textContent = "00";
-      Notify.success('Время вышло');
+      Notify.success('Time is up');
+      this.isActive = false;
+      
     }
-  })
+    
+    }, 1000);
+    
   
-};
-
-
-
-
-
+    console.log(this.intervalId);
+  },
+  
+}
+refs.btnStart.addEventListener("click", timer.start);
 
 function addLeadingZero(value) {
   return String(value).padStart(2, "0");
