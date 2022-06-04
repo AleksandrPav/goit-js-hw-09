@@ -69,7 +69,7 @@ const timer = {
     }, 1000);
     
   
-    console.log(this.intervalId);
+  
   },
   
 }
